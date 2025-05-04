@@ -41,8 +41,9 @@ body {
 .sorter {
   margin: 0px auto;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 180px 1fr 180px;
   grid-gap: 5px;
+  width: 540px;
 }
 
 .button {
@@ -110,18 +111,15 @@ body {
 }
 
 .sorter > .image {
-  display:block;
-  max-width: 250px;
-  max-height: 250px;
-  width: auto;
-  height: auto;
+  width: 180px;
+  height: 180px;
   margin: auto;
   grid-row: 1 / 7;
   cursor: pointer;
 }
 
 .sorter > .text {
-  width: 250px;
+  width: 180px;
   height: 60px;
   display: none;
 }
@@ -139,18 +137,8 @@ body {
   border: 1px solid #000000;
 }
 
-.sorter > .left-text {
-	border: 1px solid #000000;
-	grid-column: 1 / 2;
-}
-
 .sorter > .right {
   grid-column: 3 / 4;
-  border: 1px solid #000000;
-}
-
-.sorter > .right-text {
-	grid-column: 3 / 4;
   border: 1px solid #000000;
 }
 
@@ -274,7 +262,7 @@ label:hover {
 }
 
 .info {
-  /*margin: 2em auto 3em;*/
+  margin: 2em auto 3em;
   display: block;
   text-align: center;
   font-size: 0.6875em;
