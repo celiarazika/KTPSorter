@@ -111,7 +111,7 @@ body {
 }
 
 .sorter > .image {
-  width: 180px;
+  width: 120px;
   height: 180px;
   margin: auto;
   grid-row: 1 / 7;
