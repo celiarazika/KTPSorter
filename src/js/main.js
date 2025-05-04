@@ -144,11 +144,14 @@ function start() {
 
   options.forEach(opt => {
     if ('sub' in opt) {
-	const suboptArray = opt.sub.reduce((arr, val, idx) => {
-	  arr.push(document.getElementById(`cb-${opt.key}-${idx}`).checked);
-	  return arr;
-	}, []);
-	optTaken.push(suboptArray);
+      if (!document.getElementById(`cbgroup-${opt.key}`).checked) optTaken.push(false);
+      else {
+        const suboptArray = opt.sub.reduce((arr, val, idx) => {
+          arr.push(document.getElementById(`cb-${opt.key}-${idx}`).checked);
+          return arr;
+        }, []);
+        optTaken.push(suboptArray);
+      }
     } else { optTaken.push(document.getElementById(`cb-${opt.key}`).checked); }
   });
 
@@ -185,11 +188,9 @@ function start() {
           return opt.key in char.opts && char.opts[opt.key].some(key => subArray.includes(key));
         });
       }
-    } else if (optTaken[index] && index == 7) {
-	  characterDataToSort = characterDataToSort.filter(char => {
-		  return char.opts.version[0] != "GL"
-	  });
-	}
+    } else if (optTaken[index]) {
+      characterDataToSort = characterDataToSort.filter(char => !char.opts[opt.key]);
+    }
   });
 
   if (characterDataToSort.length < 2) {
@@ -286,13 +287,15 @@ function display() {
     return `<p title="${charTooltip}">${charName}</p>`;
   };
 
-  progressBar(`Battle No. ${battleNo}`, percent);
+  progressBar(`Trial No. ${battleNo}`, percent);
 
   document.querySelector('.left.sort.image').src = leftChar.img;
   document.querySelector('.right.sort.image').src = rightChar.img;
 
-  document.querySelector('.left-text').innerHTML = charNameDisp(optTaken[5] ? leftChar.name : leftChar.JPName);
-  document.querySelector('.right-text').innerHTML = charNameDisp(optTaken[5] ? rightChar.name : rightChar.JPName);
+  
+
+  document.querySelector('.left.sort.text').innerHTML = charNameDisp(leftChar.name);
+  document.querySelector('.right.sort.text').innerHTML = charNameDisp(rightChar.name);
 
   /** Autopick if choice has been given. */
   if (choices.length !== battleNo - 1) {
@@ -421,7 +424,7 @@ function pick(sortType) {
   if (leftIndex < 0) {
     timeTaken = timeTaken || new Date().getTime() - timestamp;
 
-    progressBar(`Battle No. ${battleNo} - Completed!`, 100);
+    progressBar(`Trial No. ${battleNo} - Completed!`, 100);
 
     result();
   } else {
@@ -635,7 +638,6 @@ function setLatestDataset() {
       return currentDate > array[latestDateIndex] ? currentIndex : latestDateIndex;
     }, 0);
   currentVersion = Object.keys(dataSet)[latestDateIndex];
-  console.log(`Found ${currentVersion} to be newest version.`)
 
   characterData = dataSet[currentVersion].characterData;
   options = dataSet[currentVersion].options;
@@ -643,27 +645,11 @@ function setLatestDataset() {
   populateOptions();
 }
 
-function radio(input) {
-	const ourCheckboxes = document.getElementsByClassName("fakeRadio")
-	for(let i=0;i<ourCheckboxes.length;i++) {
-		if(ourCheckboxes[i] != input && input.checked) {
-			ourCheckboxes[i].checked = false;
-		} else if(ourCheckboxes[i] != input && !input.checked) {
-			ourCheckboxes[i].checked = true;
-		}
-	}
-	if(input.checked && input.id == "cb-version-1") {
-		document.getElementById("cb-JPOnly").disabled = false;
-	} else {
-		document.getElementById("cb-JPOnly").disabled = true;
-	}
-}
-
 /** Populate option list. */
 function populateOptions() {
   const optList = document.querySelector('.options');
   const optInsert = (name, id, tooltip, checked = true, disabled = false) => {
-    return `<div><label title="${tooltip?tooltip:name}"><input id="cb-${id}" ${name=="Global"||name=="Japan"?'class="fakeRadio"':''} type="checkbox" ${checked?'checked':''} ${id=="JPOnly"?'disabled':''} ${disabled?'disabled':''} ${name=="Global"||name=="Japan"?'onclick="radio(this)"':''}> ${name}</label></div>`;
+    return `<div><label title="${tooltip?tooltip:name}"><input id="cb-${id}" type="checkbox" ${checked?'checked':''} ${disabled?'disabled':''}> ${name}</label></div>`;
   };
   const optInsertLarge = (name, id, tooltip, checked = true) => {
     return `<div class="large option"><label title="${tooltip?tooltip:name}"><input id="cbgroup-${id}" type="checkbox" ${checked?'checked':''}> ${name}</label></div>`;
@@ -686,6 +672,7 @@ function populateOptions() {
       groupbox.parentElement.addEventListener('click', () => {
         opt.sub.forEach((subopt, subindex) => {
           document.getElementById(`cb-${opt.key}-${subindex}`).disabled = !groupbox.checked;
+          if (groupbox.checked) { document.getElementById(`cb-${opt.key}-${subindex}`).checked = true; }
         });
       });
     } else {
@@ -742,8 +729,6 @@ function decodeQuery(queryString = window.location.search.slice(1)) {
     } else {
       currentVersion = dateMap[timeError ? afterDateIndex : beforeDateIndex].str;
     }
-	
-	console.log(`Using version ${currentVersion} as found to be newest.`)
 
     options = dataSet[currentVersion].options;
     characterData = dataSet[currentVersion].characterData;
@@ -761,7 +746,7 @@ function decodeQuery(queryString = window.location.search.slice(1)) {
           document.getElementById(`cb-${opt.key}-${subindex}`).checked = subIsTrue;
           document.getElementById(`cb-${opt.key}-${subindex}`).disabled = optIsTrue;
         });
-        suboptDecodedIndex = suboptDecodedIndex + optIsTrue;
+        suboptDecodedIndex = suboptDecodedIndex + optIsTrue ? 1 : 0;
       } else { document.getElementById(`cb-${opt.key}`).checked = optDecoded[index] === '1'; }
     });
 
@@ -795,9 +780,7 @@ function preloadImages() {
   };
 
   return Promise.all(characterDataToSort.map(async (char, idx) => {
-	const imgSel = optTaken[6] ? "full_shot_1.png" : "full_shot_0.png"
-	const imgUrl = `${imageRoot}${char.devName}/${imgSel}`
-    characterDataToSort[idx].img = await loadImage(`https://api.allorigins.win/raw?url=${encodeURIComponent(imgUrl)}`);
+    characterDataToSort[idx].img = await loadImage(imageRoot + char.img);
   }));
 }
 
