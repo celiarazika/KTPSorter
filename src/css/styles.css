@@ -184,7 +184,6 @@ label:hover {
   text-align: center;
   font-size: 0.75em;
 }
-
 .results {
   font-size: 0.75em;
   display: flex;
@@ -208,7 +207,7 @@ label:hover {
 }
 
 .result {
-  height: 15px;
+  height: auto;
   margin-bottom: -1px;
   display: grid;
   width: 211px;
@@ -218,12 +217,16 @@ label:hover {
 }
 
 .result.image {
-  height: 160px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .result.image img {
-  width: 160px;
-  height: 160px;
+  width: 110px;
+  height: 110px;
+  margin-bottom: 5px;
 }
 
 .result.spacer {
@@ -260,6 +263,7 @@ label:hover {
   grid-column: 2 / 3;
   border-left: 1px solid #000;
   text-align: center;
+  word-wrap: break-word;
 }
 
 .info {
