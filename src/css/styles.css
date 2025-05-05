@@ -222,7 +222,9 @@ label:hover {
 }
 
 .result.image img {
+  width: 160px;
   height: 160px;
+  object-fit: cover; /* Ensures the image scales properly within the square */
 }
 
 .result.spacer {
