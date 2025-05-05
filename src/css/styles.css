@@ -112,7 +112,7 @@ body {
 
 .sorter > .image {
   width: 120px;
-  height: 180px;
+  height: 120px;
   margin: auto;
   grid-row: 1 / 7;
   cursor: pointer;
@@ -218,7 +218,7 @@ label:hover {
 }
 
 .result.image {
-  height: 175px;
+  height: 160px;
 }
 
 .result.image img {
